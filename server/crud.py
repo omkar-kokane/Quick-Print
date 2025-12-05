@@ -96,6 +96,15 @@ def update_order_status(db: Session, order_id: int, status: models.OrderStatus):
     db_order = db.query(models.Order).filter(models.Order.id == order_id).first()
     if db_order:
         db_order.status = status
+        
+        # Sync item statuses
+        if status == models.OrderStatus.PENDING:
+            for item in db_order.items:
+                item.status = models.ItemStatus.PENDING
+        elif status == models.OrderStatus.COMPLETED:
+            for item in db_order.items:
+                item.status = models.ItemStatus.PRINTED
+                
         db.commit()
         db.refresh(db_order)
     return db_order
