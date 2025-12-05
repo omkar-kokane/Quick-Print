@@ -33,12 +33,25 @@ const ShopDashboard = () => {
         }
     };
 
+    const getFullUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        // If it's just a filename or relative path
+        return `http://localhost:8000/uploads/${url.replace(/^uploads\//, '')}`;
+    };
+
     const handlePrint = (url) => {
-        printJS(url);
+        const fullUrl = getFullUrl(url);
+        console.log("Printing URL:", fullUrl);
+        printJS({
+            printable: fullUrl,
+            type: 'pdf',
+            showModal: true
+        });
     };
 
     const handlePreview = (url, fileName) => {
-        setPreviewFile({ url, fileName });
+        setPreviewFile({ url: getFullUrl(url), fileName });
     };
 
     const handleStatusChange = async (orderId, newStatus) => {
