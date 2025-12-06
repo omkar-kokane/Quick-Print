@@ -198,6 +198,15 @@ const ShopDashboard = () => {
                                     <div>
                                         <span className="font-mono text-xs font-bold text-slate-400 uppercase tracking-wider">Order ID</span>
                                         <p className="text-2xl font-bold text-slate-900">#{order.id}</p>
+                                        {/* Order Stats */}
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-xs px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full font-medium">
+                                                {order.items.length} {order.items.length === 1 ? 'file' : 'files'}
+                                            </span>
+                                            <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full font-medium">
+                                                {order.items.reduce((sum, item) => sum + (item.page_count * item.copies), 0)} pages
+                                            </span>
+                                        </div>
                                     </div>
                                     <StatusDropdown
                                         status={order.status}
@@ -220,6 +229,7 @@ const ShopDashboard = () => {
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-semibold text-slate-900 truncate">{item.file_name}</p>
                                                     <div className="flex flex-wrap gap-1.5 mt-2">
+                                                        <Badge color="purple">{item.page_count}pg</Badge>
                                                         <Badge color={item.is_color ? "rose" : "slate"}>
                                                             {item.is_color ? "Color" : "B&W"}
                                                         </Badge>
@@ -424,6 +434,7 @@ const Badge = ({ children, color }) => {
         indigo: "bg-indigo-100 text-indigo-700",
         blue: "bg-blue-100 text-blue-700",
         emerald: "bg-emerald-100 text-emerald-700",
+        purple: "bg-purple-100 text-purple-700",
     };
 
     return (
