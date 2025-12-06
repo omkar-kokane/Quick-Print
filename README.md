@@ -2,21 +2,26 @@
 
 A hyper-modern, zero-download printing platform for campus environments. This application allows students to upload documents for printing without downloading them to the shop's computer, streamlining the workflow for print shops.
 
-## 🚀 Features
+## 🚀 Key Features
 
--   **Zero-Download Printing**: Shopkeepers can print directly from the dashboard using `print-js`.
--   **Hyper-Modern UI**: Glassmorphism, animated mesh gradients, and 3D effects.
--   **Live Order Dashboard**: Real-time order tracking with status updates (Pending, Processing, Completed).
--   **Dynamic Pricing**: Configurable per-page rates for B&W and Color printing.
--   **PDF Preview**: In-browser secure PDF preview.
--   **Queue Management**: Filter and sort orders for efficient processing.
+### For Students
+-   **Zero-Friction Uploads**: Drag & Drop interface to upload PDFs instantly.
+-   **Live Cart**: Add multiple files, configure each (Color/B&W, Copies, Duplex), and checkout in one go.
+-   **Transparent Pricing**: See the exact cost before placing an order.
 
-## 🛠️ Tech Stack
+### For Shop Owners
+-   **Command Center Dashboard**: Real-time view of all incoming orders.
+-   **Zero-Download Printing**: Print directly from the browser using `print-js` without saving files locally.
+-   **Live Status Updates**: Mark items as "Printed" or update order status (Pending → Processing → Completed).
+-   **Dynamic Pricing**: Adjust per-page rates for Color/B&W printing instantly.
 
--   **Frontend**: React (Vite), Tailwind CSS, Framer Motion
--   **Backend**: FastAPI (Python), SQLAlchemy, Pydantic
--   **Database**: MySQL (via XAMPP)
--   **Storage**: Local file storage
+## 🛠️ Architecture (Micro-Frontends)
+
+The project is split into three main components for modularity and security:
+
+1.  **Backend (`server/`)**: FastAPI + MySQL. Handles logic, database, and file storage.
+2.  **Student App (`client-student/`)**: React. Dedicated interface for students (Port `5173`).
+3.  **Shop App (`client-shop/`)**: React. Dedicated secured interface for shop owners (Port `5174`).
 
 ---
 
@@ -35,14 +40,14 @@ A hyper-modern, zero-download printing platform for campus environments. This ap
 5.  Create a database named: `quickprint_campus`
     *   *Note: No need to create tables manually, the backend will do it automatically.*
 
-### Step 2: Backend Setup (Server)
+### Step 2: Backend Setup
 Open a terminal in the project root folder:
 
 ```powershell
 # 1. Navigate to server folder
 cd server
 
-# 2. Create virtual environment
+# 2. Create virtual environment (if not already created)
 python -m venv venv
 
 # 3. Activate virtual environment
@@ -53,64 +58,67 @@ pip install -r requirements.txt
 
 # 5. Create .env file
 # Create a file named .env inside the server/ folder and add this line:
-# DATABASE_URL=mysql+pymysql://root:@localhost:3306/quickprint_campus
+# DATABASE_URL=mysql+pymysql://root:@127.0.0.1:3306/quickprint_campus
 
 # 6. Run the server
-uvicorn main:app --reload
+uvicorn main:app --reload --host 0.0.0.0
 ```
 *The backend API will start at `http://localhost:8000`*
 
-### Step 3: Frontend Setup (Client)
-Open a **new** terminal in the project root folder:
+### Step 3: Run Student App
+Open a **new** terminal:
 
 ```powershell
-# 1. Navigate to client folder
-cd client
-
-# 2. Install dependencies
+cd client-student
 npm install
-
-# 3. Run the development server
 npm run dev
 ```
-*The frontend will start at `http://localhost:5173`*
+*The Student App will start at `http://localhost:5173`*
 
-### Step 4: Initial Setup (First Run Only)
-To create the test users (Student and Shop Owner), run this script in a new terminal:
+### Step 4: Run Shop App
+Open a **new** terminal:
 
 ```powershell
-# Make sure you are in the root folder and venv is activated
-.\server\venv\Scripts\python seed_data.py
+cd client-shop
+npm install
+npm run dev
+```
+*The Shop App will start at `http://localhost:5174`*
+
+### Step 5: Seed Data (First Run Only)
+To create initial test users (Shop Owner ID: 2, Student ID: 1), run this command in the **root** folder (with venv activated):
+
+```powershell
+python seed_data.py
 ```
 
 ---
 
 ## 📱 Usage Guide
 
-### For Students (Home Page)
+### 🧑‍🎓 Student Flow (Port 5173)
 1.  Go to `http://localhost:5173`
-2.  Drag & drop a PDF file.
-3.  Select options: **Color/B&W**, **Copies**, **Duplex**.
-4.  Click **Place Order**.
+2.  Drag & drop PDF files.
+3.  Configure print settings (Copies, Color, Duplex).
+4.  Add to Cart and checkout.
 
-### For Shop Owners (Dashboard)
-1.  Go to `http://localhost:5173/shop`
-2.  **View Orders**: See incoming print jobs in real-time.
-3.  **Preview**: Click the **Eye (👁)** icon to preview the PDF without downloading.
-4.  **Print**: Click **Print** to open the system print dialog directly.
-5.  **Complete**: Click the **Check (✓)** icon to mark items as printed.
-6.  **Settings**: Click the **Gear (⚙️)** icon to set per-page prices.
+### 🏪 Shop Owner Flow (Port 5174)
+1.  Go to `http://localhost:5174`
+2.  **Dashboard**: See new orders appear instantly.
+3.  **Preview**: Click the **Eye (👁)** icon to verify the file content.
+4.  **Print**: Click **Print** to send it to the physical printer.
+5.  **Mark Printed**: Click the **Check (✓)** to clear it from the queue.
+
+---
 
 ## ⚠️ Troubleshooting
 
--   **White Screen?**
-    -   Try a hard refresh: `Ctrl + Shift + R`.
-    -   Ensure the backend server is running on port 8000.
--   **Database Error?**
-    -   Make sure XAMPP MySQL is running.
-    -   Check if `quickprint_campus` database exists in phpMyAdmin.
-    -   Verify `server/.env` has the correct `DATABASE_URL`.
+-   **"Failed to process file" / Database Error?**
+    -   Ensure XAMPP MySQL is running.
+    -   Ensure `server/.env` uses `127.0.0.1` and NOT `localhost` (Windows IPv6 issue).
+-   **App Blank/White Screen?**
+    -   Check the terminal for errors.
+    -   Ensure you are running the correct app on the correct port (`student`=5173, `shop`=5174).
 
 ## License
-
 [MIT](LICENSE)
