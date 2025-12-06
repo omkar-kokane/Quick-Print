@@ -13,9 +13,9 @@ app = FastAPI(title="QuickPrint Campus API")
 
 # CORS Configuration
 origins = [
-    "http://localhost:5173",  # Vite default port
+    "http://localhost:5173",  # Student App
+    "http://localhost:5174",  # Shop App
     "http://127.0.0.1:5173",
-    "http://localhost:5174",  # Fallback port
     "http://127.0.0.1:5174",
 ]
 

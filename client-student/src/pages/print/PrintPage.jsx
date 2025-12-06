@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import api from '../services/api';
+import api from '../../services/api';
 import { Upload, FileText, Copy, Layers, Palette, Loader2, Sparkles, Zap, Calculator, ShoppingCart, Trash2, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 
-const FileUpload = () => {
+const PrintPage = () => {
     // Cart state
     const [cartItems, setCartItems] = useState([]);
 
@@ -23,6 +23,7 @@ const FileUpload = () => {
     const [processing, setProcessing] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [dragActive, setDragActive] = useState(false);
+    const [uploadError, setUploadError] = useState(null);
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -40,6 +41,7 @@ const FileUpload = () => {
 
     const uploadFile = async (selectedFile) => {
         setProcessing(true);
+        setUploadError(null);
         try {
             const formData = new FormData();
             formData.append('file', selectedFile);
@@ -52,8 +54,8 @@ const FileUpload = () => {
             setCurrentPageCount(uploadRes.data.page_count || 1);
         } catch (error) {
             console.error("Error uploading file:", error);
-            alert('Failed to process file.');
-            setCurrentFile(null);
+            setUploadError("Failed to process file. Please try again.");
+            // Do NOT clear currentFile so user can see the error
         } finally {
             setProcessing(false);
         }
@@ -247,12 +249,12 @@ const FileUpload = () => {
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-semibold text-slate-900 truncate">{currentFile.name}</p>
-                                                    <p className="text-xs text-slate-500">
-                                                        {processing ? "Processing..." : `${currentPageCount} Pages`}
+                                                    <p className={cn("text-xs", uploadError ? "text-red-500 font-medium" : "text-slate-500")}>
+                                                        {uploadError || (processing ? "Processing..." : `${currentPageCount} Pages`)}
                                                     </p>
                                                 </div>
                                                 <button
-                                                    onClick={() => { setCurrentFile(null); setCurrentFileUrl(null); }}
+                                                    onClick={() => { setCurrentFile(null); setCurrentFileUrl(null); setUploadError(null); }}
                                                     className="p-1 hover:bg-red-50 rounded-full text-slate-400 hover:text-red-500"
                                                 >
                                                     <X className="w-4 h-4" />
@@ -449,4 +451,4 @@ const FileUpload = () => {
     );
 };
 
-export default FileUpload;
+export default PrintPage;
